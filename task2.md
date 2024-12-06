@@ -29,10 +29,20 @@
     ```
     
     *План выполнения:*
-    [Вставьте план выполнения]
+    
+    |QUERY PLAN|
+     |----------|
+     |Bitmap Heap Scan on t_books  (cost=21.03..1335.59 rows=750 width=33) (actual time=0.035..0.035 rows=1 loops=1)|
+     |  Recheck Cond: (to_tsvector('english'::regconfig, (title)::text) @@ '''expert'''::tsquery)|
+     |  Heap Blocks: exact=1|
+     |  ->  Bitmap Index Scan on t_books_fts_idx  (cost=0.00..20.84 rows=750 width=0) (actual time=0.025..0.025 rows=1 loops=1)|
+     |        Index Cond: (to_tsvector('english'::regconfig, (title)::text) @@ '''expert'''::tsquery)|
+     |Planning Time: 0.924 ms|
+     |Execution Time: 0.059 ms|
+
     
     *Объясните результат:*
-    [Ваше объяснение]
+    запрос использует GIN-индекс `t_books_fts_idx` для поиска, минимизируя количество операции, что позволяет максимально эффективно выполнять операцию
 
 6. Удалите индекс:
     ```sql
@@ -90,10 +100,18 @@
      ```
      
      *План выполнения:*
-     [Вставьте план выполнения]
+     
+     |QUERY PLAN|
+     |----------|
+     |Index Scan using t_lookup_pk on t_lookup  (cost=0.42..8.44 rows=1 width=23) (actual time=0.018..0.020 rows=1 loops=1)|
+     |  Index Cond: ((item_key)::text = '0000000455'::text)|
+     |Planning Time: 0.122 ms|
+     |Execution Time: 0.032 ms|
+
      
      *Объясните результат:*
-     [Ваше объяснение]
+     
+     использован `Index Scan` по первичному ключу
 
 14. Выполните поиск по ключу в кластеризованной таблице:
      ```sql
@@ -102,10 +120,18 @@
      ```
      
      *План выполнения:*
-     [Вставьте план выполнения]
+     
+     |QUERY PLAN|
+     |----------|
+     |Index Scan using t_lookup_clustered_pkey on t_lookup_clustered  (cost=0.42..8.44 rows=1 width=23) (actual time=0.034..0.036 rows=1 loops=1)|
+     |  Index Cond: ((item_key)::text = '0000000455'::text)|
+     |Planning Time: 0.082 ms|
+     |Execution Time: 0.057 ms|
+
      
      *Объясните результат:*
-     [Ваше объяснение]
+     
+     использован `Index Scan` по первичному ключу
 
 15. Создайте индекс по значению для обычной таблицы:
      ```sql
@@ -125,7 +151,14 @@
      ```
      
      *План выполнения:*
-     [Вставьте план выполнения]
+     
+     |QUERY PLAN|
+     |----------|
+     |Index Scan using t_lookup_value_idx on t_lookup  (cost=0.42..8.44 rows=1 width=23) (actual time=0.016..0.017 rows=0 loops=1)|
+     |  Index Cond: ((item_value)::text = 'T_BOOKS'::text)|
+     |Planning Time: 0.147 ms|
+     |Execution Time: 0.028 ms|
+
      
      *Объясните результат:*
      [Ваше объяснение]
@@ -137,12 +170,19 @@
      ```
      
      *План выполнения:*
-     [Вставьте план выполнения]
+     
+     |QUERY PLAN|
+     |----------|
+     |Index Scan using t_lookup_clustered_value_idx on t_lookup_clustered  (cost=0.42..8.44 rows=1 width=23) (actual time=0.052..0.053 rows=0 loops=1)|
+     |  Index Cond: ((item_value)::text = 'T_BOOKS'::text)|
+     |Planning Time: 0.158 ms|
+     |Execution Time: 0.063 ms|
+
      
      *Объясните результат:*
-     [Ваше объяснение]
+     я не знаю что тут объяснять, как и в предыдущем пункте - просто используется 'Index Scan' по созданным индексам
 
 19. Сравните производительность поиска по значению в обычной и кластеризованной таблицах:
      
      *Сравнение:*
-     [Ваше сравнение]
+     всё круто индексы очень быстрые, особенно когда обычная табличка, т.к. не приходится переоткрывать каждый кластер отдельно

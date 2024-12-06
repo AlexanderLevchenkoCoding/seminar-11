@@ -168,7 +168,7 @@
     ```
    
    *План выполнения:*
-   
+   .
    |QUERY PLAN|
 |----------|
 |Bitmap Heap Scan on t_books  (cost=12.17..2406.32 rows=1 width=33) (actual time=0.613..0.613 rows=0 loops=1)|
